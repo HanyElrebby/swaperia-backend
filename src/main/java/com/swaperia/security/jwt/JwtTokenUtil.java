@@ -21,6 +21,7 @@ public class JwtTokenUtil {
 	private Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 	
 	public String generateToken(UserDetailsImpl userDetails, boolean rememberMe) {
+		System.out.println(key);
 		String authorities = userDetails.getAuthorities().stream()
 				.map(authority -> authority.getAuthority())
 				.collect(Collectors.joining(","));
@@ -51,26 +52,24 @@ public class JwtTokenUtil {
 	
 	public <T> T getClaimsFromToken(String token, Function<Claims, T> claimsResolver) {
 		final Claims claims = getAllClaimsFromToken(token);
-		System.out.println("1-Claimsms: " + claims);
-		System.out.println("2-Claims: " + claimsResolver.apply(claims));
 		return claimsResolver.apply(claims);
 	}
 	
-	public Date getExpirationDateFromToken() {
-		return getClaimsFromToken(null, Claims::getExpiration);
+	public Date getExpirationDateFromToken(String token) {
+		return getClaimsFromToken(token, Claims::getExpiration);
 	}
 	
-	public Boolean isTokenExpired() {
-		Date expiration = getExpirationDateFromToken();
+	public Boolean isTokenExpired(String token) {
+		Date expiration = getExpirationDateFromToken(token);
 		return expiration.before(new Date());
 	}
 	
-	public String getEmailFromToken(String token) {
+	public String getEmailFromToken(String token) {		
 		return getClaimsFromToken(token, Claims::getSubject);
 	}
 	
 	public Boolean validateToken(String token, UserDetailsImpl userDetails) {
 		String email = getEmailFromToken(token);
-		return (email.equals(userDetails.getEmail()) && !isTokenExpired());
+		return (email.equals(userDetails.getEmail()) && !isTokenExpired(token));
 	}
 }

@@ -22,12 +22,14 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	//implementation 'org.liquibase:liquibase-core'
 	
-	
+    implementation "org.springframework.security:spring-security-oauth2-authorization-server:1.0.1"
+		
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 	implementation 'org.json:json:20220320'
 	implementation 'org.apache.commons:commons-lang3:3.0'
 	
 	compileOnly 'org.projectlombok:lombok:1.18.24'
+implementation group: 'org.springframework.boot', name: 'spring-boot-starter-websocket', version: '3.0.4'
 	
 	implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
     implementation group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'

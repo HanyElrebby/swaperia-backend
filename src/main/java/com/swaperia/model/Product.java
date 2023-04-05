@@ -19,7 +19,7 @@ import jakarta.persistence.Table;
 public class Product {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	private String id;
+	private Long id;
 	
 	@Column(name = "name")
 	private String name;
@@ -44,11 +44,11 @@ public class Product {
 	@JoinColumn(name = "category_name")
 	private Category category;
 
-	public String getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

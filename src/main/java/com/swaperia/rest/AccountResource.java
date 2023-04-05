@@ -3,6 +3,7 @@ package com.swaperia.rest;
 import java.net.http.HttpRequest;
 import java.util.List;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -25,6 +26,8 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin("http://localhost:8081")
+
 public class AccountResource {
 	   
 	private static class AccountResourceException extends RuntimeException {
@@ -58,7 +61,8 @@ public class AccountResource {
     }
 	
 	@GetMapping("/account")
-	public UserDTO getAccount() {
+	public UserDTO getAccount(HttpServletRequest request) {
+		System.out.println(request.getHeader("Authorization"));
 		return userService.getUserWithAuthorities()
 				.map(UserDTO::new)
 				.orElseThrow(() -> new AccountResourceException("User could not be found"));

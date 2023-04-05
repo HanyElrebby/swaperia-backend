@@ -1,18 +1,24 @@
 package com.swaperia.service;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.swaperia.model.Product;
+import com.swaperia.model.User;
 import com.swaperia.repository.ProductRepository;
+import com.swaperia.repository.UserRepository;
+import com.swaperia.security.SecurityUtils;
 import com.swaperia.service.dto.ProductDTO;
 
 @Service
 public class ProductService {
 	private ProductRepository productRepository;
-
-	public ProductService(ProductRepository productRepository) {
+	private UserRepository userRepository;
+	public ProductService(ProductRepository productRepository, UserRepository userRepository) {
 		this.productRepository = productRepository;
+		this.userRepository = userRepository;
 	}
 	
 	public Product saveProduct(ProductDTO productDTO, MultipartFile image) {
@@ -21,24 +27,17 @@ public class ProductService {
 		try {
 			product.setImage(ImageUtil.compressImage(image.getBytes()));
 		} catch (Exception e) {
-			// TODO: handle exception
+			System.out.println(e);
 		}
 
 		product.setDescription(productDTO.getDescription());
 		product.setValue(productDTO.getValue());
-		//product.setUser(user);
+		String userEmail = SecurityUtils.getCurrentUserUsername().orElse("");
+		User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new UserNotFoundException("User is not found"));
+		product.setUser(user);
+		product.setCategory(productDTO.getCategory());
 		
-		return product;
+		return productRepository.save(product);
 	}
-	
-	public boolean uplaodProductImage(MultipartFile image) {
-		boolean isUpload = false;
-		try {
-			
-			isUpload = true;
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-		return isUpload;
-	}
+
 }

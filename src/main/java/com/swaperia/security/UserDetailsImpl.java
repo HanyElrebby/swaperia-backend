@@ -1,6 +1,7 @@
 package com.swaperia.security;
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -20,11 +21,15 @@ public class UserDetailsImpl implements UserDetails {
 	}
 
 	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
+	public Set<GrantedAuthority> getAuthorities() {
 		return user.getAuthorities()
 				.stream()
 				.map(authority -> new SimpleGrantedAuthority(authority.getName()))
 				.collect(Collectors.toSet());
+	}
+	
+	public Long getId() {
+		return user.getId();
 	}
 
 	@Override
@@ -34,8 +39,7 @@ public class UserDetailsImpl implements UserDetails {
 
 	@Override
 	public String getUsername() {
-		user.getUsername();
-		return null;
+		return user.getUsername();
 	}
 	
 	public String getEmail() {
@@ -62,4 +66,5 @@ public class UserDetailsImpl implements UserDetails {
 		return user.isActivated();
 	}
 
+	
 }

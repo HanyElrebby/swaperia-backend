@@ -76,6 +76,10 @@ public class User extends AbstractAuditingEntity implements Serializable {
 	@Column(name = "reset_date")
     private Instant resetDate = null;
     
+//	@OneToMany
+//	private Notification notification;
+//	
+
 	@ManyToMany
 	@JoinTable(
 			name = "user_authority",
