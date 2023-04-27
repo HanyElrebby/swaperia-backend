@@ -1,17 +1,25 @@
 package com.swaperia.model;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
+import org.hibernate.annotations.Type;
 
 import org.springframework.security.crypto.encrypt.BytesEncryptor;
+
+import com.swaperia.config.ConditionConstants;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -32,17 +40,20 @@ public class Product {
 
 	@Column(name = "image")
 	private byte[] image;
+		
+	@Column(name = "condition")
+	private String condition;
 	
-	@Column(name = "image_type")
-	private String imageType;
-	
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne
 	@JoinColumn(name = "owner_id")
 	private User user;
 	
 	@ManyToOne
 	@JoinColumn(name = "category_name")
 	private Category category;
+
+	@Column(name = "delivery")
+	private String delivery;
 
 	public Long getId() {
 		return id;
@@ -84,12 +95,12 @@ public class Product {
 		this.image = image;
 	}
 
-	public String getImageType() {
-		return imageType;
+	public String getCondition() {
+		return condition;
 	}
 
-	public void setImageType(String imageType) {
-		this.imageType = imageType;
+	public void setCondition(String condition) {
+		this.condition = condition;
 	}
 
 	public User getUser() {
@@ -107,6 +118,22 @@ public class Product {
 	public void setCategory(Category category) {
 		this.category = category;
 	}
+
+	public String getDelivery() {
+		return delivery;
+	}
+
+	public void setDelivery(String delivery) {
+		this.delivery = delivery;
+	}
+
+	@Override
+	public String toString() {
+		return "Product [id=" + id + ", name=" + name + ", description=" + description + ", value=" + value + ", image="
+				+ Arrays.toString(image) + ", condition=" + condition + ", user=" + user + ", category=" + category
+				+ ", delivery=" + delivery + "]";
+	}
 	
-	private int x;
+	
+	
 }

@@ -64,6 +64,12 @@ public class NotificationDTO {
 	public void setStatus(MessageStatus status) {
 		this.status = status;
 	}
+
+	@Override
+	public String toString() {
+		return "NotificationDTO [id=" + id + ", message=" + message + ", sender=" + sender + ", reciever=" + reciever
+				+ ", createdAt=" + createdAt + ", status=" + status + "]";
+	}
 	
 	
 }

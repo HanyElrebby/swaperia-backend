@@ -33,12 +33,12 @@ public class Notification {
 	private MessageStatus status;
 	
 	@ManyToOne
-	@JoinColumn(name = "sent_to")
-	private User toUser;
+	@JoinColumn(name = "reciever")
+	private User reciever;
 	
 	@ManyToOne
-	@JoinColumn(name = "sent_from")
-	private User fromUser;
+	@JoinColumn(name = "sender")
+	private User sender;
 
 	public Long getId() {
 		return id;
@@ -72,20 +72,21 @@ public class Notification {
 		this.createdAt = createdAt;
 	}
 
-	public User getToUser() {
-		return toUser;
+	public User getReciever() {
+		return reciever;
 	}
 
-	public void setToUser(User toUser) {
-		this.toUser = toUser;
+	public void setReciever(User reciever) {
+		this.reciever = reciever;
 	}
 
-	public User getFromUser() {
-		return fromUser;
+	public User getSender() {
+		return sender;
 	}
 
-	public void setFromUser(User fromUser) {
-		this.fromUser = fromUser;
+	public void setSender(User sender) {
+		this.sender = sender;
 	}
-	
+
+
 }

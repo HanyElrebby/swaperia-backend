@@ -49,6 +49,8 @@ public class UserJWTController {
 	public ResponseEntity<?> authorize(@Valid @RequestBody LoginVM loginVM, HttpServletRequest request) throws Exception {
         Map<String, Object> responseMap = new HashMap<>();
 		try {
+			System.out.println(loginVM.getEmail());
+
 			System.out.println(loginVM.getPassword());
 			Authentication authentication = authenticationManagerBuilder.getObject().authenticate(
 					new UsernamePasswordAuthenticationToken(loginVM.getEmail(), loginVM.getPassword()));
@@ -59,6 +61,7 @@ public class UserJWTController {
 				String jwtToken = jwtTokenUtil.generateToken(user, false);
 				HttpHeaders httpHeaders = new HttpHeaders();
 			    httpHeaders.add(JWTFilter.AUTHORIZATION_HEADER, "Bearer " + jwtToken);
+			    System.out.println(jwtToken);
 				return new ResponseEntity<>(new JWTToken(jwtToken), HttpStatus.OK);
 			} else {
 				responseMap.put("error", true);

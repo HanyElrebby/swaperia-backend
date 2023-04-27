@@ -15,9 +15,13 @@ import org.springframework.util.StringUtils;
 
 import com.swaperia.config.AuthoritiesConstants;
 import com.swaperia.config.Constants;
+import com.swaperia.model.Address;
 import com.swaperia.model.Authority;
+import com.swaperia.model.Image;
 import com.swaperia.model.User;
+import com.swaperia.repository.AddressRepository;
 import com.swaperia.repository.AuthorityRepository;
+import com.swaperia.repository.ImageRepository;
 import com.swaperia.repository.UserRepository;
 import com.swaperia.rest.error.InvalidPasswordException;
 import com.swaperia.rest.vm.ManagedUserVM;
@@ -30,16 +34,20 @@ import com.swaperia.service.dto.UserDTO;
 @Service
 public class UserService {
 	private UserRepository userRepository;
-	
+	private ImageRepository imageRepository;
 	private AuthorityRepository authorityRepository;
 	
 	private PasswordEncoder passwordEncoder;
 
-	public UserService(UserRepository userRepository, AuthorityRepository authorityRepository,
-			PasswordEncoder passwordEncoder) {
+	private AddressRepository addressRepository;
+	
+	public UserService(UserRepository userRepository, ImageRepository imageRepository, AuthorityRepository authorityRepository,
+			PasswordEncoder passwordEncoder, AddressRepository addressRepository) {
 		this.userRepository = userRepository;
+		this.imageRepository = imageRepository;
 		this.authorityRepository = authorityRepository;
 		this.passwordEncoder = passwordEncoder;
+		this.addressRepository = addressRepository;
 	}
 
 	private boolean removeNonActivatedUser(User existingUser) {
@@ -73,7 +81,8 @@ public class UserService {
 		if (userDTO.getEmail() != null) {
 			newUser.setEmail(userDTO.getEmail().toLowerCase());
 		}
-		String encryptedPassword = passwordEncoder.encode(password);
+ 
+        String encryptedPassword = passwordEncoder.encode(password);
 		newUser.setPassword(encryptedPassword);
 		
 		newUser.setActivated(false);
@@ -88,7 +97,12 @@ public class UserService {
 		newUser.setAuthorities(authorities);
 		
 		userRepository.save(newUser);
-		
+		Address address = new Address();
+        
+   
+		address.setUser(newUser);
+		addressRepository.save(address);
+		System.out.println(newUser);
 		return newUser;
 	}
 	
@@ -101,8 +115,8 @@ public class UserService {
 		if (userDTO.getEmail() != null) {
 			user.setEmail(userDTO.getEmail().toLowerCase());
 		}
-		user.setImageUrl(userDTO.getImageUrl());
-        if (userDTO.getLangKey() == null) {
+
+		if (userDTO.getLangKey() == null) {
             user.setLangKey(Constants.DEFAULT_LANGUAGE); // default language
         } else {
             user.setLangKey(userDTO.getLangKey());
@@ -134,7 +148,6 @@ public class UserService {
 			user.setUsername(userName);
 			user.setEmail(email);
 			user.setLangKey(langKey);
-			user.setImageUrl(imageUrl);
 			userRepository.save(user);
 		});
 	}
@@ -156,8 +169,8 @@ public class UserService {
 					if (userDTO.getEmail() != null) {
 						user.setEmail(userDTO.getEmail());
 					}
-					user.setImageUrl(userDTO.getImageUrl());
-		            user.setActivated(userDTO.isActivated());
+
+					user.setActivated(userDTO.isActivated());
 		            user.setLangKey(userDTO.getLangKey());
 		            Set<Authority> managedAuthorities = user.getAuthorities();
 		            managedAuthorities.clear();
@@ -247,9 +260,21 @@ public class UserService {
 		   return SecurityUtils.getCurrentUserUsername().flatMap(userRepository::findOneWithAuthoritiesByEmailIgnoreCase);
 	   }
 	   
+	   public Optional<User> getFullUser() {
+		   return SecurityUtils.getCurrentUserUsername().flatMap(userRepository::findOneWithAllByEmailIgnoreCase);
+	   }
+	   
 	   public UserDTO getUserWithAuthorities(Long id) {
 		   return userRepository.findOneWithAuthoritiesById(id)
 				   .map(UserDTO::new)
 				   .get();
+	   }
+	   
+	   public Image uploadImage(byte[] data) {
+		   Image image = new Image();
+		   image.setData(data);
+		   User user = SecurityUtils.getCurrentUserUsername().flatMap(userRepository::findOneByEmailIgnoreCase).get();
+		   image.setUser(user);
+		   return imageRepository.save(image);
 	   }
 }

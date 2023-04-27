@@ -32,8 +32,8 @@ public class NotificationService {
 		User sender = userRepository.findOneByEmailIgnoreCase(notificationDTO.getSender()).get();
 		User reciever = userRepository.findOneByEmailIgnoreCase(notificationDTO.getReciever()).get();
 		
-		notification.setFromUser(sender);
-		notification.setToUser(reciever);
+		notification.setSender(sender);
+		notification.setReciever(reciever);
 		
 		return notificationRepository.save(notification);
 	}

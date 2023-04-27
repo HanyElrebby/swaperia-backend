@@ -1,18 +1,22 @@
 package com.swaperia.service.dto;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.swaperia.model.Address;
 import com.swaperia.model.Authority;
+import com.swaperia.model.Image;
 import com.swaperia.model.User;
 
+import jakarta.persistence.Lob;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 
 
 public class UserDTO {
-	private Long id;
+    private Long id;
 
     @Size(max = 50)
     private String username;
@@ -21,11 +25,13 @@ public class UserDTO {
     @Size(min = 5, max = 254)
     private String email;
 
-    @Size(max = 256)
-    private String imageUrl;
 
-    private boolean activated = false;
+    private byte[] image;
 
+    private Address address;
+
+	private boolean activated = false;
+       
     @Size(min = 2, max = 10)
     private String langKey;
 
@@ -38,6 +44,10 @@ public class UserDTO {
     private Instant lastModifiedDate;
 
     private Set<String> authorities;
+    
+    private Set<ProductDTO> products;
+    
+    
     public UserDTO() {
         // Empty constructor needed for Jackson.
     }
@@ -47,7 +57,7 @@ public class UserDTO {
         this.username = user.getUsername();
         this.email = user.getEmail();
         //this.activated = user.isActivated();
-        //this.imageUrl = user.getImageUrl();
+        this.image = user.getImage().getData();
         //this.langKey = user.getLangKey();
         this.createdBy = user.getCreatedBy();
         this.createdDate = user.getCreatedDate();
@@ -56,7 +66,9 @@ public class UserDTO {
         this.authorities = user.getAuthorities().stream()
             .map(Authority::getName)
             .collect(Collectors.toSet());
+        this.products = user.getProducts().stream().map(ProductDTO::new).collect(Collectors.toSet());
     }
+
 
 	public Long getId() {
 		return id;
@@ -82,12 +94,28 @@ public class UserDTO {
 		this.email = email;
 	}
 
-	public String getImageUrl() {
-		return imageUrl;
+	public Address getAddress() {
+		return address;
 	}
 
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
+	public void setAddress(Address address) {
+		this.address = address;
+	}
+	
+	public byte[] getImage() {
+		return image;
+	}
+
+	public void setImage(byte[] image) {
+		this.image = image;
+	}
+
+	public Set<ProductDTO> getProducts() {
+		return products;
+	}
+
+	public void setProducts(Set<ProductDTO> products) {
+		this.products = products;
 	}
 
 	public boolean isActivated() {
@@ -148,9 +176,13 @@ public class UserDTO {
 
 	@Override
 	public String toString() {
-		return "UserDTO [id=" + id + ", username=" + username + ", email=" + email + ", imageUrl=" + imageUrl
-				+ ", activated=" + activated + ", langKey=" + langKey + ", createdBy=" + createdBy + ", createdDate="
-				+ createdDate + ", lastModifiedBy=" + lastModifiedBy + ", lastModifiedDate=" + lastModifiedDate
-				+ ", authorities=" + authorities + "]";
+		return "UserDTO [id=" + id + ", username=" + username + ", email=" + email + ", image=" + Arrays.toString(image)
+				+ ", address=" + address + ", activated=" + activated + ", langKey=" + langKey + ", createdBy="
+				+ createdBy + ", createdDate=" + createdDate + ", lastModifiedBy=" + lastModifiedBy
+				+ ", lastModifiedDate=" + lastModifiedDate + ", authorities=" + authorities + ", products=" + products
+				+ "]";
 	}
+
+	
+	
 }

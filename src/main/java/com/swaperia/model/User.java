@@ -3,6 +3,7 @@ package com.swaperia.model;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -19,6 +20,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -26,10 +28,7 @@ import jakarta.persistence.JoinColumn;
 
 @Entity
 @Table(name = "user", schema = "public")
-public class User extends AbstractAuditingEntity implements Serializable {	
-
-	private static final long serialVersionUID = 1L;
-
+public class User extends AbstractAuditingEntity {	
 	@Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
 	@Column(name = "id")
@@ -51,9 +50,8 @@ public class User extends AbstractAuditingEntity implements Serializable {
 	@JsonIgnore
     private String password;
     
-    private String mobileNumber;
-    
-    private Date dateOfBirth;
+    @Column(name = "phone")
+    private String phone;
     
     @NotNull
 	@Column(name = "activated")
@@ -65,9 +63,6 @@ public class User extends AbstractAuditingEntity implements Serializable {
     
 	@Column(name = "lang_key")
 	private String langKey;
-	
-	@Column(name = "image_url")
-	private String imageUrl;
     
 	@Column(name = "reset_key")
     @JsonIgnore
@@ -75,10 +70,9 @@ public class User extends AbstractAuditingEntity implements Serializable {
     
 	@Column(name = "reset_date")
     private Instant resetDate = null;
-    
-//	@OneToMany
-//	private Notification notification;
-//	
+
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	private Set<Address> addresses = new HashSet<>();
 
 	@ManyToMany
 	@JoinTable(
@@ -89,9 +83,17 @@ public class User extends AbstractAuditingEntity implements Serializable {
 	@JsonIgnore
     private Set<Authority> authorities = new HashSet<Authority>();
 
-	@OneToMany(cascade = CascadeType.REMOVE, mappedBy = "user")
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
 	private List<Product> products = new ArrayList<>();
+
+	@OneToOne(mappedBy = "user")
+	private Image image;
 	
+//	@OneToMany
+//	private Notification notification;
+//	
+	
+
 	public Long getId() {
 		return id;
 	}
@@ -124,6 +126,14 @@ public class User extends AbstractAuditingEntity implements Serializable {
 		this.password = password;
 	}
 
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
 	public boolean isActivated() {
 		return activated;
 	}
@@ -148,14 +158,6 @@ public class User extends AbstractAuditingEntity implements Serializable {
 		this.langKey = langKey;
 	}
 
-	public String getImageUrl() {
-		return imageUrl;
-	}
-
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
-	}
-
 	public String getResetKey() {
 		return resetKey;
 	}
@@ -172,30 +174,20 @@ public class User extends AbstractAuditingEntity implements Serializable {
 		this.resetDate = resetDate;
 	}
 
+	public Set<Address> getAddresses() {
+		return addresses;
+	}
+
+	public void setAddresses(Set<Address> addresses) {
+		this.addresses = addresses;
+	}
+
 	public Set<Authority> getAuthorities() {
 		return authorities;
 	}
 
 	public void setAuthorities(Set<Authority> authorities) {
 		this.authorities = authorities;
-	}
-	
-	
-
-	public String getMobileNumber() {
-		return mobileNumber;
-	}
-
-	public void setMobileNumber(String mobileNumber) {
-		this.mobileNumber = mobileNumber;
-	}
-
-	public Date getDateOfBirth() {
-		return dateOfBirth;
-	}
-
-	public void setDateOfBirth(Date dateOfBirth) {
-		this.dateOfBirth = dateOfBirth;
 	}
 
 	public List<Product> getProducts() {
@@ -206,12 +198,18 @@ public class User extends AbstractAuditingEntity implements Serializable {
 		this.products = products;
 	}
 
+	public Image getImage() {
+		return image;
+	}
+
+	public void setImage(Image image) {
+		this.image = image;
+	}
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", username=" + username + ", email=" + email + ", password=" + password
-				+ ", activated=" + activated + ", activationKey=" + activationKey + ", langKey=" + langKey
-				+ ", imageUrl=" + imageUrl + ", resetKey=" + resetKey + ", resetDate=" + resetDate + ", authorities="
-				+ authorities + "]";
+		return "User [id=" + id + ", username=" + username + ", email=" + email + ", password=" + password + ", phone="
+				+ phone + ", activated=" + activated + ", activationKey=" + activationKey + ", langKey=" + langKey
+				+ ", resetKey=" + resetKey + ", resetDate=" + resetDate + "]";
 	}
 }

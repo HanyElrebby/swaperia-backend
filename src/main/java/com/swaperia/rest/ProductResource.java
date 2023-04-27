@@ -3,8 +3,10 @@ package com.swaperia.rest;
 import java.security.Principal;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +29,7 @@ import org.springframework.ui.Model;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin("http://localhost:8081")
 public class ProductResource {
 	private ProductService productService;
 	private CategoryRepository categoryRepository;
@@ -47,12 +50,18 @@ public class ProductResource {
 	}
 	
 	
-	@PostMapping("/product")
-	public ResponseEntity<Product> createProduct(@Valid @ModelAttribute ProductDTO productDTO,
-			@RequestParam("image") MultipartFile image) {
-		Product body =  productService.saveProduct(productDTO, image);
-		return ResponseEntity.status(HttpStatus.OK).body(body);
+	@PostMapping(value = "/products")
+	public ProductDTO createProduct(@Valid @RequestBody ProductDTO productDTO) {
+		System.out.println(productDTO);
+		Product body =  productService.saveProduct(productDTO);
+		System.out.println("6666666666666");
+		return productDTO;
 	}
 	
+	@GetMapping("/products")
+	public ResponseEntity<Page<Product>> getProducts() {
+		Page<Product> products = productService.listAllproducts();
+		return ResponseEntity.status(HttpStatus.OK).body(products);
+	}
 	
 }

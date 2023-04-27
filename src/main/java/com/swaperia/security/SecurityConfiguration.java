@@ -28,6 +28,7 @@ public class SecurityConfiguration {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+	
 	@Bean
 	public JWTFilter authenticationJwtTokenFilter() {
 		return new JWTFilter();
@@ -40,6 +41,7 @@ public class SecurityConfiguration {
 		.authorizeHttpRequests(authorize -> 
 		authorize.requestMatchers(HttpMethod.POST, "/api/authenticate").permitAll()
 		 .requestMatchers(HttpMethod.POST, "/api/register").permitAll()
+		 .requestMatchers(HttpMethod.GET, "/api/products").permitAll()
 		 .requestMatchers( "/ws/**").permitAll()
 		 .anyRequest().authenticated());
 

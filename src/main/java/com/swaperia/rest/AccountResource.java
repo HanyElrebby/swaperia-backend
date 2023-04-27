@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.swaperia.model.Image;
 import com.swaperia.model.User;
+import com.swaperia.repository.ImageRepository;
 import com.swaperia.repository.UserRepository;
 import com.swaperia.rest.vm.EmailVM;
 import com.swaperia.rest.vm.ManagedUserVM;
@@ -55,7 +57,8 @@ public class AccountResource {
 	
 
 	@PostMapping("/register")
-    public void registerAccount(@Valid @RequestBody ManagedUserVM managedUserVM) {
+    public void registerAccount(@Valid @RequestBody ManagedUserVM managedUserVM, HttpServletRequest request) {
+		System.out.println(request.getHeader("Authorization"));
         userService.registerUser(managedUserVM, managedUserVM.getPassword());
         //mailService.sendActivationEmail(user);
     }
@@ -63,6 +66,8 @@ public class AccountResource {
 	@GetMapping("/account")
 	public UserDTO getAccount(HttpServletRequest request) {
 		System.out.println(request.getHeader("Authorization"));
+		UserDTO user = userService.getFullUser().map(UserDTO::new).orElseThrow(() -> new AccountResourceException("User could not be found"));
+		System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" + user);
 		return userService.getUserWithAuthorities()
 				.map(UserDTO::new)
 				.orElseThrow(() -> new AccountResourceException("User could not be found"));
@@ -85,5 +90,8 @@ public class AccountResource {
 		userService.changePassword(passwordChangeDTO.getCurrentPassword(), passwordChangeDTO.getNewPassword());
 	}
 	
-	
+	@PostMapping("/account/upload-image")
+	public Image uploadImage(@RequestBody byte[] data) {
+		return userService.uploadImage(data);
+	}
 }
